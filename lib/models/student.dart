@@ -7,13 +7,13 @@ class Student {
     this.id,
     required this.name,
     required this.email,
-  });
+  });  
 
   Map<String, dynamic> toMap() {
     return {
-      'id': this.id,
-      'name': this.name,
-      'email': this.email,
+      'id': id,
+      'name': name,
+      'email': email,
     };
   }
 

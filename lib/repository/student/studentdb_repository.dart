@@ -1,21 +1,21 @@
-import 'package:cadastro_de_alunos/models/db_local.dart';
 import 'package:cadastro_de_alunos/models/student.dart';
+import 'package:cadastro_de_alunos/models/db_local.dart';
 import 'package:cadastro_de_alunos/repository/student/student_repository.dart';
 import 'package:sqflite/sqflite.dart';
 
 class StudentDBRepository implements StudentRepository {
   @override
-  late DBlocal dbLocal;
+  late DBLocal dbLocal;
 
   StudentDBRepository() {
-    dbLocal = DBlocal(
+    dbLocal = DBLocal(
       table: "students",
     );
   }
 
   @override
   Future<Student> find(int id) async {
-    Database database = await dbLocal.getConection();
+    Database database = await dbLocal.getConnection();
     var data = await database.query(
       dbLocal.table,
       where: "id=",
@@ -26,30 +26,52 @@ class StudentDBRepository implements StudentRepository {
   }
 
   @override
-  Future<List<Student>> findAll() {
-    // TODO: implement findAll
-    throw UnimplementedError();
+  Future<List<Student>> findAll() async {
+    Database database = await dbLocal.getConnection();
+    var data = await database.query(
+      dbLocal.table,
+    );
+    database.close();
+    return data.map((student) => Student.fromMap(student)).toList();
   }
 
   @override
-  Future<int> insert(Student entity) {
-    // TODO: implement insert
-    throw UnimplementedError();
+  Future<int> insert(Student entity) async {
+    Database database = await dbLocal.getConnection();
+    int result = await database.insert(dbLocal.table, entity.toMap());
+    database.close();
+    return result;
   }
 
   @override
-  Future<int> remove(
-      {required String condition, required List conditionValues}) {
-    // TODO: implement remove
-    throw UnimplementedError();
+  Future<int> remove({
+    required String conditions,
+    required List conditionValues,
+  }) async {
+    Database database = await dbLocal.getConnection();
+    int result = await database.delete(
+      dbLocal.table,
+      where: conditions,
+      whereArgs: conditionValues,
+    );
+    database.close();
+    return result;
   }
 
   @override
-  Future<int> update(
-      {required Student entity,
-      required String condition,
-      required List conditionValues}) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<int> update({
+    required Student entity,
+    required String conditions,
+    required List conditionValues,
+  }) async {
+    Database database = await dbLocal.getConnection();
+    int result = await database.update(
+      dbLocal.table,
+      entity.toMap(),
+      where: conditions,
+      whereArgs: conditionValues,
+    );
+    database.close();
+    return result;
   }
 }
